@@ -54,11 +54,13 @@ final_data = pd.concat([data, X_enc], axis=1)
 # =============================================================================
 
 
-#from sklearn.model_selection import train_test_split
-#output_df = pd.read_excel("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\MEMO\\data_exploration\\output.xlsx")
+from sklearn.model_selection import train_test_split
+output_df = pd.read_excel("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\output.xlsx")
 
-#x_lin = filtered_df
-#y_lin = output_df
+x_lin = filtered_df
+y_lin = output_df
+
+
 
 
 
