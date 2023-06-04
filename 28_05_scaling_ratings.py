@@ -9,10 +9,35 @@ import pandas as pd
 df_ratings = pd.read_csv("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\output.csv")
 
 # overlapping df
-overlap_df = df_ratings[df_ratings.duplicated(subset=['Start Time (ms)', 'End Time (ms)', 'Group', 'Session'], keep=False)]
-df_ratings = overlap_df[['Start Time (ms)', 'End Time (ms)', 'Group', 'Session', 'Annotator', 'Involvement']]
-df_ratings.columns #columns needed: start time, end time, annotator, rating
+df_ratings = df_ratings[df_ratings.duplicated(subset=['Start Time (ms)', 'End Time (ms)', 'Group', 'Session'], keep=False)]
+df_ratings = df_ratings[['Start Time (ms)', 'End Time (ms)', 'Group', 'Session', 'Annotator', 'Involvement']]
+#columns needed: start time, end time, annotator, rating
 
+df_ratings['Group_session'] = (df_ratings['Group'].astype(str) + df_ratings['Session'].astype(str)).astype(int)
+data = df_ratings.loc[df_ratings['Group_session'] == 51]
+
+import seaborn as sns
+
+sns.set(style='whitegrid', palette="deep", font_scale=1.1, rc={"figure.figsize": [8, 5]})
+sns.distplot(
+    data['Involvement'], norm_hist=False, kde=False, bins=20, hist_kws={"alpha": 1}
+).set(xlabel='Group Involvement (Group: 5, Session: 1)', ylabel='Count');
+
+
+
+
+
+# import random
+# rnd = random.randint(0, 41)
+# df = df_ratings.copy()
+# df = df[df['Group_session'] == rnd]
+
+# # LABEL ENCODER
+# from sklearn.preprocessing import LabelEncoder
+# label = LabelEncoder()
+
+# label.fit(df.Group_session)
+# df.Group_session = label.transform(df.Group_session)
 
 annotator1 = df_ratings[df_ratings['Annotator'] == 1]
 annotator2 = df_ratings[df_ratings['Annotator'] == 2]
@@ -202,14 +227,38 @@ for (start, end, group, session), annotations in groups:
                 weighted_mean = (annotations['Involvement'] * annotations['Annotator']).sum() / annotations['Annotator'].sum()
                 
                 # Update all duplicated rows with the weighted mean
-                df.loc[annotations.index, 'Involvement'] = weighted_mean
+                df.loc[annotations.index, 'Involvement'] = round(weighted_mean)
             
 
 final_df = df.drop_duplicates(subset=df.columns.difference(['Annotator'])) # has 1599 rows, ????so what happens to the extra 49 rows
 
 
 
+# =============================================================================
+# NORMALIZATION OF THE DATA SET
+# =============================================================================
 
+# =============================================================================
+# Calculate the z-score of the involvement for z-score standarsization 
+# =============================================================================
+
+from sklearn.preprocessing import StandardScaler
+
+# Apply Z-score standardization to the 'Involvement' column
+scaler = StandardScaler()
+final_df['Involvement_ZScore'] = scaler.fit_transform(final_df[['Involvement']])
+# Z-score standardization
+# final_df['Normalized_Involvement'] = (final_df['Involvement'] - final_df['Involvement'].mean()) / final_df['Involvement'].std()
+
+
+# =============================================================================
+# Calculate the log tranformation of the involvement
+# =============================================================================
+
+import numpy as np
+
+# Apply log transformation to the 'Involvement' column
+final_df['Involvement_Log'] = np.log(final_df['Involvement'])
 
 
 
