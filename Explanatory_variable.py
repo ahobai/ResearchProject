@@ -69,6 +69,25 @@ final_data = final_data.drop_duplicates()
 # final_data = pd.concat([data, X_enc], axis=1)
 
 
+
+# =============================================================================
+# LABEL ENCODER
+# from sklearn.preprocessing import LabelEncoder
+# label = LabelEncoder()
+# 
+# label.fit(filtered_df.GENDER)
+# filtered_df.GENDER = label.transform(filtered_df.GENDER)
+# print(filtered_df.GENDER.head)
+# 
+# label.fit(filtered_df.Demographic)
+# filtered_df.Demographic = label.transform(filtered_df.Demographic)
+# print(filtered_df.Demographic.head)
+# 
+# label.fit(filtered_df.online_meetings_experience)
+# filtered_df.online_meetings_experience = label.transform(filtered_df.online_meetings_experience)
+# =============================================================================
+
+
 # =============================================================================
 # TARGET VARIABLE EXPLORATION
 # =============================================================================
@@ -183,7 +202,6 @@ df = df.drop_duplicates()
 
 # =============================================================================
 # import seaborn as sns
-# import matplotlib.pyplot as plt
 # # involvement distribution base on age groups
 # age = df[['ProfilicID', 'Group', 'Session', 'age', 'Involvement']]
 # age = age.drop_duplicates()
@@ -214,7 +232,7 @@ df = df.drop_duplicates()
        # 'online_meetings_experience_I have never had online meetings',
        # 'online_meetings_experience_I have online meetings on a regular basis',
        # 'online_meetings_experience_I've had online meetings before',
-# corr_df = df[['age', 'GENDER_Female', 'GENDER_Male',
+# corr_df = df[['age', 'GENDER_Female', 'GENDER_Male's,
 #         'Demographic_business', 'Demographic_middle', 'Demographic_older',
 #         'Demographic_parent', 'Demographic_student']]
 # corr_df['virtual_experience_Never'] = df[['online_meetings_experience_I have never had online meetings']]
@@ -234,16 +252,14 @@ encoded_df = pd.get_dummies(corr_df, drop_first=True)
 # f = encoded_df[(encoded_df['online_meetings_experience_I have online meetings on a regular basis'] == False) & (encoded_df["online_meetings_experience_I've had online meetings before"] == False)]
 # 
 # =============================================================================
-# =============================================================================
 # WORKING!
-# # Calculate the correlation matrix
-# corr_matrix = encoded_df.corr()
-# encoded_df = encoded_df.dropna()
-# encoded_df = encoded_df._get_numeric_data()
-# =============================================================================
+# Calculate the correlation matrix
+corr_matrix = encoded_df.corr()
+encoded_df = encoded_df.dropna()
+encoded_df = encoded_df._get_numeric_data()
+
 
 # =============================================================================
-# 
 # # NOT WORKING
 # value = 0
 # for i in range(len(corr_matrix)):
@@ -253,13 +269,21 @@ encoded_df = pd.get_dummies(corr_df, drop_first=True)
 #         
 # 
 # # WORKING Create a heatmap using seaborn
+# import matplotlib.pyplot as plt
 # plt.figure(figsize=(10, 8))
 # sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', square=True)
 # plt.title('Correlation Heatmap')
 # plt.show()
-# 
-# 
 # =============================================================================
+
+
+
+
+# =============================================================================
+# CALCULATE VIF
+# FIND THRESHOLD FOR VIF TO DROP THE COLS WITH HIGHER VIF THAN THE THRESHOLD
+# =============================================================================
+
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 # Select the explanatory variables
@@ -272,52 +296,19 @@ vif = pd.DataFrame()
 vif["Variable"] = X.columns
 vif["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
 
-
-# =============================================================================
-# CALCULATE VIF
-# FIND THRESHOLD FOR VIF TO DROP THE COLS WITH HIGHER VIF THAN THE THRESHOLD
-# =============================================================================
-
-
-
-# =============================================================================
-# LABEL ENCODER
-# from sklearn.preprocessing import LabelEncoder
-# label = LabelEncoder()
-# 
-# label.fit(filtered_df.GENDER)
-# filtered_df.GENDER = label.transform(filtered_df.GENDER)
-# print(filtered_df.GENDER.head)
-# 
-# label.fit(filtered_df.Demographic)
-# filtered_df.Demographic = label.transform(filtered_df.Demographic)
-# print(filtered_df.Demographic.head)
-# 
-# label.fit(filtered_df.online_meetings_experience)
-# filtered_df.online_meetings_experience = label.transform(filtered_df.online_meetings_experience)
-# =============================================================================
-
+# remove the age and regular virtual meetings columns as their VIF score is higher than 10
+X = X[['GENDER_Male', 'Demographic_middle', 'Demographic_older',
+       'Demographic_parent', 'Demographic_student',
+       "online_meetings_experience_I've had online meetings before"]]
+vif = pd.DataFrame()
+vif["Variable"] = X.columns
+vif["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
 
 from sklearn.model_selection import train_test_split
-output_df = pd.read_excel("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\output.xlsx")
 
-x_lin = filtered_df
-y_lin = output_df
+y = encoded_df['Mean_Involvement']
 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-
-
-
-
-print("Nr rows before dropping withdrawn: {}".format(df.shape[0]))
-
-df_w_withdrawn = df[df.group != 'withdrawn']
-
-print("Nr rows after dropping withdrawn: {}".format(df_w_withdrawn.shape[0]))
-
-df_w_withdrawn.columns
-
-
-print()
 
 
