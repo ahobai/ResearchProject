@@ -6,7 +6,7 @@ Created on Sun May 28 20:09:28 2023
 """
 
 import pandas as pd
-df_ratings = pd.read_csv("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\output.csv") # 11614 rows
+df_ratings = pd.read_csv("output.csv") # 11614 rows
 
 # overlapping df
 df_ratings_duplicates = df_ratings[df_ratings.duplicated(subset=['Start Time (ms)', 'End Time (ms)', 'Group', 'Session'], keep=False)] # has 3247 rows
@@ -22,17 +22,6 @@ df_ratings_overlap = df_ratings_overlap.groupby(['Start Time (ms)', 'End Time (m
 final_df_1 = df_ratings.drop_duplicates(subset=['Start Time (ms)', 'End Time (ms)', 'Group', 'Session'], keep=False) # 8367 unique rows
 # add to the df with all unique values the overlapping annotations 
 final_df = pd.concat([final_df_1, df_ratings_overlap]) # 9966 = 8367 unique + 1599 overlapped
-
-
-# import seaborn as sns
-# df_ratings_visualize = pd.DataFrame()
-# df_ratings_visualize = df_ratings.copy()
-# df_ratings_visualize['Group_session'] = "g" + df_ratings['Group'].astype(str) +"-s"+ df_ratings['Session'].astype(str)
-# data = df_ratings_visualize.loc[df_ratings_visualize['Group_session'] == 51]
-# sns.set(style='whitegrid', palette="deep", font_scale=1.1, rc={"figure.figsize": [8, 5]})
-# sns.distplot(
-#     data['Involvement'], norm_hist=False, kde=False, bins=20, hist_kws={"alpha": 1}
-# ).set(xlabel='Group Involvement (Group: 5, Session: 1)', ylabel='Count');
 
 annotator1 = df_ratings[df_ratings['Annotator'] == 1]
 annotator2 = df_ratings[df_ratings['Annotator'] == 2]

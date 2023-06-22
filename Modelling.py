@@ -10,10 +10,10 @@ Created on Fri Jun  9 21:57:22 2023
 
 import pandas as pd
 
-df1 = pd.read_csv("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\profilicId.csv")
-df2 = pd.read_excel("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\personal_info.xlsx")
-#df3 = pd.read_excel("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\post_questionaire.xlsx", dtype='object')
-df4 = pd.read_excel("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\MEMO_participant_group_assignment.xlsx")
+df1 = pd.read_csv("profilicId.csv")
+df2 = pd.read_excel("personal_info.xlsx")
+#df3 = pd.read_excel("post_questionaire.xlsx", dtype='object')
+df4 = pd.read_excel("MEMO_participant_group_assignment.xlsx")
 
 merged_df = pd.merge(df1, df2, on='ProfilicID')
 merged_df = pd.merge(merged_df, df4, on='ProfilicID')
@@ -38,7 +38,7 @@ final_data = final_data.drop_duplicates()
 #%% TARGET VAR.
 
 import pandas as pd
-df_ratings = pd.read_csv("C:\\Users\\User\\Desktop\\UNIVERSITY\\RP\\data_exploration\\output.csv") # 11614 rows
+df_ratings = pd.read_csv("output.csv") # 11614 rows
 
 # overlapping df
 df_ratings_duplicates = df_ratings[df_ratings.duplicated(subset=['Start Time (ms)', 'End Time (ms)', 'Group', 'Session'], keep=False)] # has 3247 rows
@@ -589,11 +589,6 @@ accuracy = 100 - np.mean(mape)
 mae = mean_absolute_error(y_test, clf_predictions)
 # Calculate MedAE
 medae = median_absolute_error(y_test, clf_predictions)
-# Adjusted R-squared
-# n = clf_predictions.shape[0]
-# k = X_train.shape[1]
-# r2 = r2_score(y_test,clf_predictions)
-# adj_r_sq = 1 - (1 - r2)*(n-1)/(n-1-k)
 
 results = pd.DataFrame()
 results["Method"] = ["Decision Tree"]
