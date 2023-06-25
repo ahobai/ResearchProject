@@ -9,7 +9,6 @@ Created on Fri Jun  9 21:57:22 2023
 #%% EXPLANATORY VARS.
 
 import pandas as pd
-
 df1 = pd.read_csv("profilicId.csv")
 df2 = pd.read_excel("personal_info.xlsx")
 #df3 = pd.read_excel("post_questionaire.xlsx", dtype='object')
@@ -58,6 +57,12 @@ final_df = pd.concat([final_df_1, df_ratings_overlap]) # 9966 = 8367 unique + 15
 
 #%% WEIGHTED AVERAGE INVOLVEMENT FOR EACH GROUP (MEAN OF EACH SESSION MEAN)
 
+# Select only the annotations done by the female rater
+# grouped_df = final_df.loc[final_df['Annotator'] == 2]
+
+# Select only the annotations done by the male raters
+# grouped_df = final_df.loc[final_df['Annotator'] != 2]
+
 # Calculate the weighted average involvement
 grouped_df = final_df.groupby(['Group', 'Session'])
 
@@ -69,7 +74,7 @@ group_involvement_df = mean_df.groupby('Group')['Involvement'].mean().reset_inde
 
 #%%
 
-#%% LENGTH OF PEAK INVOLVMENT INSTEAD OF MEAN INVOLVEMENT
+#%% LENGTH OF PEAK INVOLVMENT
 
 # # Calculate the count of peak values (e.g., number of 5s) for each session in each group
 # grouped_df = final_df[final_df['Involvement'] > 3].groupby(['Group', 'Session'])
@@ -79,10 +84,6 @@ group_involvement_df = mean_df.groupby('Group')['Involvement'].mean().reset_inde
 
 # # Calculate the involvement for each group over all sessions
 # group_involvement_df = round(count_df.groupby('Group')['Involvement'].mean()).reset_index()
-
-
-
-
 
 #%% PREPROCESSED DATASET MERGE
 
@@ -95,83 +96,82 @@ df['age'] = df['age'].astype(int)
 
 #%% DATA VISUALIZATION
 
-# # =============================================================================
-# # VISUALIZE THE DATA SET
-# # =============================================================================
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# categorical = ['Demographic', 'GENDER', 'online_meetings_experience']
+# =============================================================================
+# VISUALIZE THE DATA SET
+# =============================================================================
+import matplotlib.pyplot as plt
+import seaborn as sns
+categorical = ['Demographic', 'GENDER', 'online_meetings_experience']
 
-# # Plot the involvement
-# sns.distplot(df['Mean_Involvement'])
-# plt.grid(False)
-# plt.show()
+# Plot the involvement
+sns.distplot(df['Involvement'])
+plt.grid(False)
+plt.show()
 
-# # Plot the age
-# sns.distplot(df.age)
-# plt.grid(False)
-# plt.show()
+# Plot the age
+sns.distplot(df.age)
+plt.grid(False)
+plt.show()
 
-# # Calculate the weighted average involvement
-# grouped_annotator_df = final_df.groupby(['Group', 'Session', 'Annotator'])
+# Calculate the weighted average involvement
+grouped_annotator_df = final_df.groupby(['Group', 'Session', 'Annotator'])
 
-# # Create a new DataFrame with the weighted average involvement
-# mean_annotator_df = pd.DataFrame({'Mean_Involvement': grouped_annotator_df['Involvement'].mean()}).reset_index()
+# Create a new DataFrame with the weighted average involvement
+mean_annotator_df = pd.DataFrame({'Mean_Involvement': grouped_annotator_df['Involvement'].mean()}).reset_index()
 
-# # Calculate the involvement for each group over all sessions
-# annotator_involvement_df = mean_annotator_df.groupby(['Group', 'Annotator'])['Mean_Involvement'].mean().reset_index()
-# sns.catplot(data=annotator_involvement_df, x="Group", y="Mean_Involvement", hue="Annotator", kind="swarm")
-# plt.show()
+# Calculate the involvement for each group over all sessions
+annotator_involvement_df = mean_annotator_df.groupby(['Group', 'Annotator'])['Mean_Involvement'].mean().reset_index()
+sns.catplot(data=annotator_involvement_df, x="Group", y="Mean_Involvement", hue="Annotator", kind="swarm")
+plt.show()
 
-# # Plot the age
-# sns.catplot(data=df, x="Group", y="Mean_Involvement", hue="age", kind="swarm")
-# plt.show()
+# Plot the age
+sns.catplot(data=df, x="Group", y="Involvement", hue="age", kind="swarm")
+plt.show()
 
-# # Plot the gender
-# sns.catplot(data=df, x="Group", y="Mean_Involvement", hue="GENDER", kind="swarm")
-# plt.show()
+# Plot the gender
+sns.catplot(data=df, x="Group", y="Involvement", hue="GENDER", kind="swarm")
+plt.show()
 
-# # Plot the demographic
-# sns.catplot(data=df, x="Group", y="Mean_Involvement", hue="Demographic", kind="swarm")
-# plt.show()
+# Plot the demographic
+sns.catplot(data=df, x="Group", y="Involvement", hue="Demographic", kind="swarm")
+plt.show()
 
-# # Plot the virtual experience
-# sns.catplot(data=df, x="Group", y="Mean_Involvement", hue="online_meetings_experience", kind="swarm")
-# plt.show()
+# Plot the virtual experience
+sns.catplot(data=df, x="Group", y="Involvement", hue="online_meetings_experience", kind="swarm")
+plt.show()
 
-# # Plot the demographics in each groups
-# g = sns.catplot(data=df, x="Group", y="Demographic", kind="swarm")
-# g.despine(left=True)
-# plt.show()
+# Plot the demographics in each groups
+g = sns.catplot(data=df, x="Group", y="Demographic", kind="swarm")
+g.despine(left=True)
+plt.show()
 
-# # Plot the correalation between the age and the involvement
-# dataset = pd.DataFrame()
-# dataset['age'] = df.age
-# dataset['Mean_Involvement']  = df.Mean_Involvement
-# dataset['Involvement'] = df['Mean_Involvement']
-# sns.lmplot(x = "age", y = "Mean_Involvement", data=dataset)
-# plt.show()
+# Plot the correalation between the age and the involvement
+dataset = pd.DataFrame()
+dataset['age'] = df.age
+dataset['Involvement']  = df.Involvement
+sns.lmplot(x = "age", y = "Involvement", data=dataset)
+plt.show()
 
-# # Plot the demographics involvement based on gender
-# g = sns.catplot(
-#     data=df, x="GENDER", y="Mean_Involvement", hue='Group', col="Demographic",
-#     kind="bar", col_wrap=3,
-# )
-# g.set_axis_labels("", "Involvement")
-# g.set_xticklabels(["Men", "Women"])
-# g.set_titles("{col_name} {col_var}")
-# g.despine(left=True)
-# plt.show()
+# Plot the demographics involvement based on gender
+g = sns.catplot(
+    data=df, x="GENDER", y="Involvement", hue='Group', col="Demographic",
+    kind="bar", col_wrap=3,
+)
+g.set_axis_labels("", "Involvement")
+g.set_xticklabels(["Men", "Women"])
+g.set_titles("{col_name} {col_var}")
+g.despine(left=True)
+plt.show()
 
-# # Plot the demographics involvement based on groups
-# g = sns.catplot(
-#     data=df, x="Group", y="Mean_Involvement", col="Demographic",
-#     kind="bar", col_wrap=3, legend=True
-# )
-# g.set_axis_labels("Group", "Involvement")
-# g.set_titles("{col_name} {col_var}")
-# g.despine(left=True)
-# plt.show()
+# Plot the demographics involvement based on groups
+g = sns.catplot(
+    data=df, x="Group", y="Involvement", col="Demographic",
+    kind="bar", col_wrap=3, legend=True
+)
+g.set_axis_labels("Group", "Involvement")
+g.set_titles("{col_name} {col_var}")
+g.despine(left=True)
+plt.show()
 
 #%% CATEGORICAL DATA ENCODING
 
@@ -508,13 +508,6 @@ performancedf.loc[3] = ["Random Forest", rmse_mean, mape_mean, mae_mean, medae_m
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-# Cannot split the data set 70:30 as the GLMM needs to have 
-# the same # of unique groups in both training and testing.
-# For some reason keeping the same number in both with stratify does not 
-# satisfy the GLMM model.
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.7, random_state=47)
-
-
 # =============================================================================
 # splitting such as we have the same number of groups in train as in test set
 # =============================================================================
@@ -590,6 +583,7 @@ mae = mean_absolute_error(y_test, clf_predictions)
 # Calculate MedAE
 medae = median_absolute_error(y_test, clf_predictions)
 
+# results contains all the performances of all models used 
 results = pd.DataFrame()
 results["Method"] = ["Decision Tree"]
 results["RMSE"] = RMSE
@@ -632,9 +626,6 @@ results.loc[1] = ["Random Forest", rmse, mape, mae, medae]
 
 #%% LINEAR REGRESSION NEW
 
-# import statsmodels.formula.api as smf
-# formula = 'Involvement ~ age + Gender + middle + older + parent + student + virtual_experience_Previous'
-
 mod = smf.ols(formula=formula, data=train_data).fit()
 print('Regression summary')
 print(mod.summary())
@@ -668,46 +659,42 @@ results.loc[2] = ['Linear Regression', RMSE, mape, mae, medae]
 
 #%% Predictions plots
 
+# PREDICTION ERROR PLOT
+from sklearn.linear_model import Lasso
+from yellowbrick.regressor import PredictionError
 
-# # PREDICTION ERROR PLOT
-# from sklearn.linear_model import Lasso
-# from yellowbrick.regressor import PredictionError
+# Instantiate the linear model and visualizer
+model = Lasso()
+visualizer = PredictionError(model)
 
-# # Instantiate the linear model and visualizer
-# model = Lasso()
-# visualizer = PredictionError(model)
+visualizer.fit(normalized_x_train, y_train)  # Fit the training data to the model
+visualizer.score(normalized_x_test, y_test)  # Evaluate the model on the test data
+visualizer.poof()                    # Draw/show/poof the data
 
-# visualizer.fit(normalized_x_train, y_train)  # Fit the training data to the model
-# visualizer.score(normalized_x_test, y_test)  # Evaluate the model on the test data
-# visualizer.poof()                    # Draw/show/poof the data
+ax = sns.residplot(x = "age", y= "Involvement", data = encoded, lowess = True)
+ax.set(ylabel='Observed - Prediction')
+plt.show()
 
-# ax = sns.residplot(x = "age_scaled", y= "Mean_Involvement", data = encoded, lowess = True)
-# ax.set(ylabel='Observed - Prediction')
-# plt.show()
+# RESIDUALS GRAPH
+from sklearn.linear_model import Ridge
+from yellowbrick.regressor import ResidualsPlot
 
-# # RESIDUALS GRAPH
-# from sklearn.linear_model import Ridge
-# from yellowbrick.regressor import ResidualsPlot
+# Instantiate the linear model and visualizer
+model = Ridge()
+visualizer = ResidualsPlot(model)
 
-# # Instantiate the linear model and visualizer
-# model = Ridge()
-# visualizer = ResidualsPlot(model)
-
-# visualizer.fit(normalized_x_train, y_train)  # Fit the training data to the model
-# visualizer.score(normalized_x_test, y_test)  # Evaluate the model on the test data
-# visualizer.poof()                    # Draw/show/poof the data
+visualizer.fit(normalized_x_train, y_train)  # Fit the training data to the model
+visualizer.score(normalized_x_test, y_test)  # Evaluate the model on the test data
+visualizer.poof()                    # Draw/show/poof the data
 
 #%% GENERALISED MIXED MODEL REGRESSION
 
-# import researchpy as rp
-# rp.codebook(train_data)
-# data = pd.DataFrame()
-# data = X.copy()
-# data['Involvement'] = y.copy()
-# rp.codebook(data)
-
-# import statsmodels.formula.api as smf
-# formula = 'Involvement ~ 1 + age + Gender + middle + parent + student + virtual_experience_Previous'
+import researchpy as rp
+rp.codebook(train_data)
+data = pd.DataFrame()
+data = X.copy()
+data['Involvement'] = y.copy()
+rp.codebook(data)
 
 mod = smf.mixedlm(formula=formula, data=train_data, groups=train_data['Group']).fit()
 print('GLMM summary')
@@ -744,316 +731,178 @@ results.loc[3] = ["GLMM", rmse, mape, mae, medae]
 
 #%% LMM same results as GLMM
 
-# from statsmodels.regression.mixed_linear_model import MixedLM
-# import statsmodels.api as sm
+from statsmodels.regression.mixed_linear_model import MixedLM
+import statsmodels.api as sm
 
-# group = X_train['Group']
-# X_train_fixed = pd.DataFrame()
-# X_train_fixed = X_train[['age', 'Gender', 'middle', 'parent', 'student', 'virtual_experience_Previous']]
-# X_train_fixed = sm.add_constant(X_train_fixed)
+group = X_train['Group']
+X_train_fixed = pd.DataFrame()
+X_train_fixed = X_train[['age', 'Gender', 'middle', 'parent', 'student', 'virtual_experience_Previous']]
+X_train_fixed = sm.add_constant(X_train_fixed)
 
-# model = MixedLM(y_train, X_train_fixed, groups=group).fit()
+model = MixedLM(y_train, X_train_fixed, groups=group).fit()
 
-# # Get the estimated fixed effects coefficients
-# fixed_effects = model.params
-# print('Fixed effects for MixedLm (model): ') 
-# print(fixed_effects)
+# Get the estimated fixed effects coefficients
+fixed_effects = model.params
+print('Fixed effects for MixedLm (model): ') 
+print(fixed_effects)
 
-# print('LMM summary (model):')
-# print(model.summary())
+print('LMM summary (model):')
+print(model.summary())
 
-# # Predict on the test data
-# X_test = X_test.drop(columns=['Group'])
-# X_test = sm.add_constant(X_test)
-# lmm_predictions = model.predict(X_test)
+# Predict on the test data
+X_test_fixed = X_test.drop(columns=['Group'])
+X_test_fixed = sm.add_constant(X_test_fixed)
+lmm_predictions = model.predict(X_test_fixed)
 
-# # Calculate residuals
-# lmm_residuals = y_test - lmm_predictions
-# # Plot residuals against predicted values
-# plt.scatter(lmm_predictions, lmm_residuals)
-# plt.axhline(y=0, color='red', linestyle='--')
-# plt.xlabel('Predicted Values')
-# plt.ylabel('Residuals')
-# plt.title('Residuals vs. Predicted Values for LMM model')
-# plt.show()
+# Calculate residuals
+lmm_residuals = y_test - lmm_predictions
+# Plot residuals against predicted values
+plt.scatter(lmm_predictions, lmm_residuals)
+plt.axhline(y=0, color='red', linestyle='--')
+plt.xlabel('Predicted Values')
+plt.ylabel('Residuals')
+plt.title('Residuals vs. Predicted Values for LMM model')
+plt.show()
 
 
-# lmm_errors = abs(lmm_predictions - y_test)
-# # RMSE
-# rmse = sqrt(mean_squared_error(y_test,lmm_predictions))
-# # Calculate mean absolute percentage error (MAPE)
-# # mape = 100 * (lmm_errors / y_test)
-# mape = mean_absolute_percentage_error(y_test, lmm_predictions)
-# # Calculate and display accuracy
-# accuracy = 100 - np.mean(mape)
-# # Calculate MAE
-# mae = mean_absolute_error(y_test, lmm_predictions)
-# # Calculate MedAE
-# medae = median_absolute_error(y_test, lmm_predictions)
-# results.loc[5] = ["LMM model", rmse, mape, mae, medae]
+lmm_errors = abs(lmm_predictions - y_test)
+# RMSE
+rmse = sqrt(mean_squared_error(y_test,lmm_predictions))
+# Calculate mean absolute percentage error (MAPE)
+# mape = 100 * (lmm_errors / y_test)
+mape = mean_absolute_percentage_error(y_test, lmm_predictions)
+# Calculate and display accuracy
+accuracy = 100 - np.mean(mape)
+# Calculate MAE
+mae = mean_absolute_error(y_test, lmm_predictions)
+# Calculate MedAE
+medae = median_absolute_error(y_test, lmm_predictions)
+results.loc[5] = ["LMM model", rmse, mape, mae, medae]
 
 #%% LMM RESULTS BASED ON THE ENTIRE DATASET
 
-# group = X['Group']
-# X_fixed = pd.DataFrame()
-# X_fixed = X[['age', 'Gender', 'middle', 'parent', 'student', 'virtual_experience_Previous', 'Group']]
-# X_fixed = pd.DataFrame(
-#     scaler.fit_transform(X_fixed),
-#     columns = X_fixed.columns
-# )
-# X_fixed = sm.add_constant(X_fixed)
-# y = y.reset_index(drop=True)
+group = X['Group']
+X_fixed = pd.DataFrame()
+X_fixed = X[['age', 'Gender', 'middle', 'parent', 'student', 'virtual_experience_Previous', 'Group']]
+X_fixed = pd.DataFrame(
+    scaler.fit_transform(X_fixed),
+    columns = X_fixed.columns
+)
+X_fixed = sm.add_constant(X_fixed)
+y = y.reset_index(drop=True)
 
-# model = MixedLM(y, X_fixed, groups=group).fit()
+model = MixedLM(y, X_fixed, groups=group).fit()
 
 # Get the estimated fixed effects coefficients
-# fixed_effects = model.params
-# print('Fixed effects for MixedLm (model) on the whole data set: ') 
-# print(fixed_effects)
+fixed_effects = model.params
+print('Fixed effects for MixedLm (model) on the whole data set: ') 
+print(fixed_effects)
 
-# print('LMM summary (model) on the whole data set:')
-# print(model.summary())
+print('LMM summary (model) on the whole data set:')
+print(model.summary())
 
 #%% GLMM on the categorical variables before encoding them
 
-# formula = 'Involvement ~ age + C(GENDER) + C(Demographic) + C(online_meetings_experience)'
+formula = 'Involvement ~ age + C(GENDER) + C(Demographic) + C(online_meetings_experience)'
 
-# mod1 = smf.mixedlm(formula=formula, data=corr_df, groups='Group').fit()
-# print('MixedLm (Group) summary')
-# print(mod1.summary())
+mod1 = smf.mixedlm(formula=formula, data=corr_df, groups='Group').fit()
+print('MixedLm (Group) summary')
+print(mod1.summary())
 #%%
-#%% LINEAR REGRESSION OLD
-
-# import matplotlib.pyplot as plt
-# from sklearn.linear_model import LinearRegression
-
-# # construct our linear regression model and fit training data
-# lr = LinearRegression(fit_intercept=True).fit(normalized_x_train, y_train)
-
-# # # and let's plot what this relationship looks like between variables and involvement
-# # xfit = np.linspace(-3, 3, 1000)
-# # yfit = lr.predict(xfit[:, np.newaxis])
-# # plt.scatter(X_train, y)
-# # plt.plot(xfit, yfit);
-# # plt.xlabel("Explanatory variables")
-# # plt.ylabel("Involvement")
-
-# # PREDICT on testing set
-# lr_predictions = lr.predict(normalized_x_test)
-
-# # Store the slope and interceipt
-# lo_slope = lr.coef_[0]
-# lr_interceipt = lr.intercept_
-
-# # Calculate residuals
-# lr_residuals = y_test - lr_predictions
-# # Plot residuals against predicted values
-# plt.scatter(lr_predictions, lr_residuals)
-# plt.axhline(y=0, color='red', linestyle='--')
-# plt.xlabel('Predicted Values')
-# plt.ylabel('Residuals')
-# plt.title('Residuals vs. Predicted Values for Linear Regression')
-# plt.show()
-
-# lr_errors = abs(lr_predictions - y_test)
-
-# # Store the RMSE
-# RMSE = sqrt(mean_squared_error(y_test, lr_predictions))
-# r2 = r2_score(y_test,lr_predictions)
-# # Calculate mean absolute percentage error (MAPE)
-# mape = 100 * (lr_errors / y_test)
-# # Calculate and display accuracy
-# accuracy = 100 - np.mean(mape)
-
-# results.loc[2] = ["Linear Regression", RMSE, r2, accuracy]
-#%% OLD GLMM
-
-# import statsmodels.api as sm
-
-# # Define the formula for the GLMM
-# formula = 'Mean_Involvement ~ Gender + middle + older + parent + student + virtual_experience_Regular + virtual_experience_Previous + C(Group)'
-# # formula = "Mean_Involvement ~ Female + Male + business + middle + older + parent + student + virtual_experience_Never + virtual_experience_Regular + virtual_experience_Previous + C(Group)"
-
-
-# # Reset indexes
-# # X_train.reset_index(drop=True, inplace=True)
-# # y_train.reset_index(drop=True, inplace=True)
-
-# # Create a DataFrame with both predictors and target variable
-# train_data = X_train.copy()
-# train_data['Group'] = train_data['Group'].astype('category')
-# train_data['Mean_Involvement'] = y_train
-
-# # Fit the GLMM model
-# # glmm = smf.glm(formula=formula, data=train_data, family=sm.families.Gaussian()).fit()
-# # glmm = smf.mixedlm(formula, train_data, groups=train_data['Group']).fit()
-# glmm = sm.GLM(y_train, X_train, family=sm.families.Gaussian()).fit()
-
-# print(glmm.summary())
-
-# # Predict on the test data
-# glmm_predictions = glmm.predict(X_test)
-
-# # Calculate residuals
-# glmm_residuals = y_test - glmm_predictions
-# # Plot residuals against predicted values
-# plt.scatter(glmm_predictions, glmm_residuals)
-# plt.axhline(y=0, color='red', linestyle='--')
-# plt.xlabel('Predicted Values')
-# plt.ylabel('Residuals')
-# plt.title('Residuals vs. Predicted Values for GLMM')
-# plt.show()
-
-
-# glmm_errors = abs(glmm_predictions - y_test)
-
-# # RMSE
-# rmse = sqrt(mean_squared_error(y_test,glmm_predictions))
-# # R2
-# r2 = r2_score(y_test,glmm_predictions)
-# # Calculate mean absolute percentage error (MAPE)
-# mape = 100 * (glmm_errors / y_test)
-# # Calculate and display accuracy
-# accuracy = 100 - np.mean(mape)
-
-# results.loc[5] = ["GLMM", rmse, r2, accuracy]
 
 #%% Gaussian Process Regression
 
-# from sklearn.gaussian_process import GaussianProcessRegressor
-# from sklearn.gaussian_process.kernels import RBF
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF
 
-# # Create the Gaussian process regression model
-# kernel = RBF(length_scale=1.0)
-# gp = GaussianProcessRegressor(kernel=kernel)
+# Create the Gaussian process regression model
+kernel = RBF(length_scale=1.0)
+gp = GaussianProcessRegressor(kernel=kernel)
 
-# # Fit the model to the training data
-# gp.fit(X_train, y_train)
+# Fit the model to the training data
+gp.fit(X_train, y_train)
 
-# # Predict using the trained model
-# gp_predictions, y_pred_std = gp.predict(X_test, return_std=True)
+# Predict using the trained model
+gp_predictions, y_pred_std = gp.predict(X_test, return_std=True)
 
-# # Calculate residuals
-# gp_residuals = y_test - gp_predictions
-# # Plot residuals against predicted values
-# plt.scatter(gp_predictions, gp_residuals)
-# plt.axhline(y=0, color='red', linestyle='--')
-# plt.xlabel('Predicted Values')
-# plt.ylabel('Residuals')
-# plt.title('Residuals vs. Predicted Values for Gaussian Process Regression')
-# plt.show()
+# Calculate residuals
+gp_residuals = y_test - gp_predictions
+# Plot residuals against predicted values
+plt.scatter(gp_predictions, gp_residuals)
+plt.axhline(y=0, color='red', linestyle='--')
+plt.xlabel('Predicted Values')
+plt.ylabel('Residuals')
+plt.title('Residuals vs. Predicted Values for Gaussian Process Regression')
+plt.show()
 
 
-# gp_errors = abs(gp_predictions - y_test)
+gp_errors = abs(gp_predictions - y_test)
 
-# # RMSE
-# rmse = sqrt(mean_squared_error(y_test,gp_predictions))
-# # R2
-# r2 = r2_score(y_test,gp_predictions)
-# # Calculate mean absolute percentage error (MAPE)
-# mape = 100 * (gp_errors / y_test)
-# # Calculate and display accuracy
-# accuracy = 100 - np.mean(mape)
+# RMSE
+rmse = sqrt(mean_squared_error(y_test,gp_predictions))
+# Calculate mean absolute percentage error (MAPE)
+# mape = 100 * (lmm_errors / y_test)
+mape = mean_absolute_percentage_error(y_test, gp_predictions)
+# Calculate and display accuracy
+accuracy = 100 - np.mean(mape)
+# Calculate MAE
+mae = mean_absolute_error(y_test, gp_predictions)
+# Calculate MedAE
+medae = median_absolute_error(y_test, gp_predictions)
 
-# results.loc[5] = ["Gaussian Process Regression", rmse, r2, accuracy]
+results.loc[6] = ["Gaussian Process Regression", rmse, mape, mae, medae]
 
 #%% GPBoost
 
-# import gpboost as gpb
+import gpboost as gpb
 
-# # Specify the parameters for the GPBoost model
-# params = {
-#     'objective': 'regression',
-#     'task': 'train',
-#     'learning_rate': 0.1,
-#     'num_iterations': 100,
-#     'num_leaves': 31,
-#     'verbose': 0
-# }
+# Specify the parameters for the GPBoost model
+params = {
+    'objective': 'regression',
+    'task': 'train',
+    'learning_rate': 0.1,
+    'num_iterations': 100,
+    'num_leaves': 31,
+    'verbose': 0
+}
 
-# # Create the GPBoost dataset
-# group_sizes = X_train.groupby('Group').size().values
-# train_dataset = gpb.Dataset(X_train, y_train, group=group_sizes)
-
-
-# # Train the GPBoost model
-# model = gpb.train(params, train_dataset)
-
-# # Make predictions on the test data
-# gpb_predictions = model.predict(X_test)
+# Create the GPBoost dataset
+group_sizes = X_train.groupby('Group').size().values
+train_dataset = gpb.Dataset(X_train, y_train, group=group_sizes)
 
 
+# Train the GPBoost model
+model = gpb.train(params, train_dataset)
 
-# # Calculate residuals
-# gpb_residuals = y_test - gpb_predictions
-# # Plot residuals against predicted values
-# plt.scatter(gpb_predictions, gpb_residuals)
-# plt.axhline(y=0, color='red', linestyle='--')
-# plt.xlabel('Predicted Values')
-# plt.ylabel('Residuals')
-# plt.title('Residuals vs. Predicted Values for GPBoost')
-# plt.show()
+# Make predictions on the test data
+gpb_predictions = model.predict(X_test)
 
 
-# gpb_errors = abs(gpb_predictions - y_test)
 
-# # RMSE
-# rmse = sqrt(mean_squared_error(y_test,gpb_predictions))
-# # R2
-# r2 = r2_score(y_test,gpb_predictions)
-# # Calculate mean absolute percentage error (MAPE)
-# mape = 100 * (gpb_errors / y_test)
-# # Calculate and display accuracy
-# accuracy = 100 - np.mean(mape)
-
-# results.loc[6] = ["BPBoost", rmse, r2, accuracy]
-#%%
+# Calculate residuals
+gpb_residuals = y_test - gpb_predictions
+# Plot residuals against predicted values
+plt.scatter(gpb_predictions, gpb_residuals)
+plt.axhline(y=0, color='red', linestyle='--')
+plt.xlabel('Predicted Values')
+plt.ylabel('Residuals')
+plt.title('Residuals vs. Predicted Values for GPBoost')
+plt.show()
 
 
-#%% GLMM first attempt
+gpb_errors = abs(gpb_predictions - y_test)
 
-# import researchpy as rp
-# import statsmodels.formula.api as smf
+# RMSE
+rmse = sqrt(mean_squared_error(y_test,gpb_predictions))
+# Calculate mean absolute percentage error (MAPE)
+# mape = 100 * (lmm_errors / y_test)
+mape = mean_absolute_percentage_error(y_test, gpb_predictions)
+# Calculate and display accuracy
+accuracy = 100 - np.mean(mape)
+# Calculate MAE
+mae = mean_absolute_error(y_test, gpb_predictions)
+# Calculate MedAE
+medae = median_absolute_error(y_test, gpb_predictions)
 
-# encoded['Mean_Involvement'] = y
-# rp.codebook(X)
-# rp.summary_cont(encoded.groupby(["age", "Gender_Male"])["Mean_Involvement"])
-
-# data =pd.DataFrame()
-# data = normalized_x_train.copy()
-# y_train = y_train.reset_index()
-# data['Mean_Involvement'] = y_train['Mean_Involvement']
-
-# # fit our model
-# md = smf.mixedlm("Mean_Involvement ~ Gender_Male", data, groups=data["Group"])
-# mdf = md.fit()
-# print(mdf.summary())
-
-# # Plot the predictions
-# performance = pd.DataFrame()
-# performance["residuals"] = mdf.resid.values
-# performance["gender"] = data.Gender_Male
-# performance["predicted"] = mdf.predict(X_test)
-
-# sns.lmplot(x = "predicted", y = "residuals", data = performance)
-
-# ax = sns.residplot(x = "gender", y = "residuals", data = performance, lowess=True)
-# ax.set(ylabel='Observed - Prediction')
-# plt.show()
-
-# mdf_predict = mdf.predict(X_test)
-# # Calculate the absolute errors
-# errors = abs(mdf_predict - y_test)
-
-# # Store the RMSE
-# RMSE = sqrt(mean_squared_error(y_test, mdf_predict))
-# # R2
-# r2 = r2_score(y_test,mdf_predict)
-# # Calculate mean absolute percentage error (MAPE)
-# mape = 100 * (errors / y_test)
-# # Calculate and display accuracy
-# accuracy = 100 - np.mean(mape)
-
-# results.loc[5] = ["Mixed_Random_Model", RMSE, r2, accuracy]
-#%%
+results.loc[7] = ["BPBoost", rmse, mape, mae, medae]
 
