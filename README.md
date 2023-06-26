@@ -1,5 +1,5 @@
 # ResearchProject
-The influence of individual backgrounds on conversational involvement in a group setting.
+The influence of individual backgrounds on conversational involvement in a group setting. This experiment is part of the [Research Project 2023](https://github.com/TU-Delft-CSE/Research-Project).
 
 
 ## Dependencies used
